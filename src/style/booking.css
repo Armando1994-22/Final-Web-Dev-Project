@@ -1,0 +1,81 @@
+.bookings-container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+  font-family: sans-serif;
+  background: rgb(65, 64, 64)
+}
+
+.bookings-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #ffffff;
+}
+
+.bookings-list {
+  display: grid;
+  gap: 20px;
+}
+
+.booking-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 20px;
+  background-color: #8d8787;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.booking-car-name {
+  margin: 0 0 12px 0;
+  font-size: 20px;
+  color: #111827;
+  font-weight: 600;
+}
+
+.booking-dates {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #ebebec;
+}
+
+.booking-dates p {
+  margin: 0;
+}
+
+.booking-footer {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.status-badge {
+  background-color: #54c83d;
+  color: #943633;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.booking-message {
+  padding: 40px;
+  text-align: center;
+  color: #4b5563;
+  font-family: sans-serif;
+}
+
+.cancel-booking-btn {
+  transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+}
+
+.cancel-booking-btn:hover:not(:disabled) {
+  background-color: #dc2626 !important; /* Darker deep red on hover */
+  transform: scale(1.02);
+}
+
+.cancel-booking-btn:active:not(:disabled) {
+  transform: scale(0.98);
+}

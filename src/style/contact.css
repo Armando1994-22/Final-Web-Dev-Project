@@ -1,0 +1,42 @@
+.contact{
+    padding: 100px 60px;
+    background: #0f171b;
+    text-align: center;
+    margin: 20px;
+    border-radius: 10px;
+}
+
+.contact h2{
+    font-size: 30px;
+    margin-bottom: 20px;
+}
+
+.contact-grid{
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 30px; 
+   
+    
+}
+
+.contact-card {
+    background: rgb(138, 22, 22);
+    /* Removed the old 20px vertical margins to let the gap property rule layout spacing */
+    margin: 0 auto; 
+    padding: 10px;
+    transition: 0.4s ease;
+    max-width: 400px;
+    width: 100%; /* Ensures smaller cards stretch cleanly up to their max-width */
+}
+
+.contact-card:hover{
+    transform: translateY(-12px);
+}
+
+.contact-card h3{
+    margin-bottom: 5px;
+}
+
+
+
+
