@@ -3,7 +3,8 @@
   margin: 40px auto;
   padding: 20px;
   font-family: sans-serif;
-  background: rgb(65, 64, 64)
+  background: rgb(65, 64, 64);
+  border-radius: 12px; /* Smoothed container edges */
 }
 
 .bookings-title {
@@ -19,17 +20,17 @@
 }
 
 .booking-card {
-  border: 1px solid #e5e7eb;
+  border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle dark border */
   border-radius: 8px;
   padding: 20px;
   background-color: #8d8787;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2); /* Enhanced depth drop shadow */
 }
 
 .booking-car-name {
   margin: 0 0 12px 0;
   font-size: 20px;
-  color: #111827;
+  color: #ffffff; /* Changed to white for clean contrast on gray cards */
   font-weight: 600;
 }
 
@@ -47,12 +48,16 @@
 .booking-footer {
   margin-top: 16px;
   padding-top: 12px;
-  border-top: 1px solid #f3f4f6;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: space-between; /* Pushes badge to left and button to right */
+  align-items: center;            /* Perfectly centers them vertically on the line */
+  gap: 12px; /* Match modern card theme */
 }
 
 .status-badge {
   background-color: #54c83d;
-  color: #943633;
+  color: #ffffff; /* Fixed text color for accessibility over green badge */
   padding: 4px 12px;
   border-radius: 9999px;
   font-size: 14px;
@@ -60,19 +65,67 @@
   display: inline-block;
 }
 
+/* --- NEW SLEEK AUTHENTICATION & MESSAGE PANEL PANELS --- */
+
 .booking-message {
+  max-width: 500px;
+  margin: 60px auto;
   padding: 40px;
   text-align: center;
-  color: #4b5563;
+  color: #e5e7eb; /* Light grayish-white text for readability */
   font-family: sans-serif;
+  background: rgba(255, 255, 255, 0.05); /* Modern glass card look */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
 }
+
+.booking-message h3 {
+  font-size: 22px;
+  color: #ffffff;
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.booking-message p {
+  color: #9ca3af; /* Soft Muted text */
+  font-size: 15px;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+/* Authentication CTA Action Button */
+.auth-cta-btn {
+  padding: 12px 28px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  background-color: #2563eb; /* High performance electric blue */
+  color: white;
+  border: none;
+  border-radius: 6px;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+}
+
+.auth-cta-btn:hover {
+  background-color: #1d4ed8; /* Darker deep slate blue */
+  transform: translateY(-1px);
+}
+
+.auth-cta-btn:active {
+  transform: translateY(1px);
+}
+
+/* --- HOVER MECHANICS FOR RENTAL CANCELLATIONS --- */
 
 .cancel-booking-btn {
   transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
 }
 
 .cancel-booking-btn:hover:not(:disabled) {
-  background-color: #dc2626 !important; /* Darker deep red on hover */
+  background-color: #dc2626 !important; 
   transform: scale(1.02);
 }
 

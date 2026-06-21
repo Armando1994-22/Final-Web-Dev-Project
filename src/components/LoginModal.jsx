@@ -43,16 +43,8 @@ export default function LoginModal({ onClose }) {
 
       // 2. Insert the user's full name into the profiles table we created
       if (data?.user) {
-        const { error: profileError } = await supabase
-          .from("profiles")
-          .insert([{ id: data.user.id, full_name: fullName.trim() }]);
-
-        if (profileError) {
-          alert(`Auth succeeded, but profile creation failed: ${profileError.message}`);
-        } else {
-          alert("Account created! Check your email inbox for a confirmation link.");
-          onClose(); // Close the modal
-        }
+        alert("🎉 Account created successfully! Welcome to our rental fleet.");
+        onClose(); 
       }
     } else {
       // Handle normal Log In

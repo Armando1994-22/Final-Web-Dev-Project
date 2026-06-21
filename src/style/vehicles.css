@@ -227,3 +227,151 @@
   from { opacity: 0; transform: scale(0.95); }
   to { opacity: 1; transform: scale(1); }
 }
+
+.calendar-input-wrapper {
+  position: relative;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.calendar-input-wrapper label {
+  color: #000000;
+  display: block;
+  margin-bottom: 6px;
+  font-weight: bold;
+}
+
+/* The interactive bar the user clicks to open the calendar */
+.custom-date-trigger {
+  padding: 10px;
+  background-color: #c3bbbb;
+  border: 1px solid #cccccc;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #141414;
+  text-align: center;
+  font-weight: 500;
+  transition: border-color 0.2s ease;
+}
+
+.custom-date-trigger:hover {
+  border-color: #2563eb; /* Highlights blue on hover */
+}
+
+/* The pop-up container housing the calendar widgets */
+.calendar-popover-box {
+  position: absolute;
+  z-index: 9999;
+  top: 5%; /* Shifted up further as requested */
+  left: 50%;
+  transform: translateX(-50%) scale(0.83); 
+  transform-origin: top center;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* Soft premium shadow */
+  background-color: #c3bbbb; /* Clean white card backdrop matching your login template */
+  border: 1px solid #e5e7eb;
+  border-radius: 12px; /* Smooth rounded corners */
+  padding: 28px !important;
+  width: max-content;
+}
+
+/* 2. FORCE NATIVE LIGHT INTERFACES FOR THE PICKER */
+.calendar-popover-box .rdrCalendarWrapper,
+.calendar-popover-box .rdrMonth,
+.calendar-popover-box .rdrMonths {
+  background-color: #faf7f7 !important;
+}
+
+.calendar-popover-box .rdrMonthName {
+  color: #181818 !important;
+  font-weight: 700;
+}
+
+.calendar-popover-box .rdrDayNumber span {
+  color: #374151 !important;
+}
+
+.calendar-popover-box .rdrWeekDay {
+  color: #53565b !important;
+}
+
+/* 3. SUBTLE SELECTION TINTS (GRAYSCALE/SOFT TINTS) */
+.calendar-popover-box .rdrInRange {
+  background: #e79292 !important; /* Soft light gray for dates between selection boundaries */
+}
+
+.calendar-popover-box .rdrStartEdge,
+.calendar-popover-box .rdrEndEdge,
+.calendar-popover-box .rdrSelected {
+  background: #ec4848 !important; /* Dark charcoal selection anchors */
+}
+
+/* 4. PERFECTLY CENTERED ACTION BUTTON */
+.calendar-confirm-btn {
+  display: block;
+  margin: 16px auto 0 !important; /* Auto left/right handles centering perfectly */
+  padding: 10px 32px;
+  background-color: #b90505; /* Restored clean login blue or use your target theme colors */
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  text-align: center;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  width: fit-content; /* Collapses button bounds to content size for center alignment */
+}
+
+.calendar-confirm-btn:hover {
+  background-color: #ea6a6a;
+  transform: translateY(-1px);
+}
+
+.calendar-confirm-btn:active {
+  transform: translateY(1px)
+}
+
+/* Removes the layout wrapper panel container completely */
+.calendar-popover-box .rdrDefinedRangesWrapper {
+  display: none !important;
+}
+
+/* Ensures the calendar months use 100% of the newly freed card space */
+.calendar-popover-box .rdrCalendarWrapper {
+  display: inline-flex;
+}
+
+.calendar-close-x {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 16px;
+  font-weight: bold;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+  transition: color 0.2s ease, transform 0.1s ease;
+  z-index: 10000; 
+}
+
+  .calendar-close-x:hover {
+  color: #dc2626; /* Switches to theme red on hover */
+  transform: scale(1.1);
+}
+
+.calendar-close-x:active {
+  transform: scale(0.9);
+}
+
+.calendar-popover-box .rdrDayDisabled {
+  visibility: hidden !important; /* Hides the calendar numbers cleanly from the grid block */
+  pointer-events: none !important; /* Disables all hover mechanics or tapping fields */
+}
+
+.calendar-popover-box .rdrDayPassive {
+  visibility: hidden !important; /* Makes the text numbers completely invisible */
+  pointer-events: none !important;
+}

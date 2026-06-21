@@ -36,50 +36,50 @@ export default function App(){
   const verifiedFullName = user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email?.split('@')[0] || "Valued Customer";
 
   return (
-  <>
-  <Navbar 
-    user={user}
-    onLoginClick={() => setIsLoginOpen(true)}
-    onLogoutClick={handleLogout}
-    onViewChange={setCurrentView}
-    currentView={currentView}
-  />
-  {user && (
-    <div style={{ padding: "10px", backgroundColor: "#e2e8f0", textAlign: "center", color: "#333" }}>
-      <h2>Welcome Back,  {verifiedFullName}</h2>
-      <p>Explor our fleet below and login to select your reservation days.</p>
-    </div>
-  )}
-
-  {user ? (
-    currentView === "bookings" ? (
-      <BookingDetails user={user} />
-    ) : (
-      <Vehicles
-      user={user}
-      onLoginClick={() => setIsLoginOpen(true)}
-      />
-    )
-  ) : (
     <>
-  <Hero/>
-  <Vehicles 
-    user={user}
-    onLoginClick={()=> setIsLoginOpen(true)}
-  />
-  <AboutUs/>
-  <Contact/>
-  <CTA
-  onLoginClick={() => setIsLoginOpen(true)}
-  />
-  </>
-  )}
-  <Footer/>
-  {isLoginOpen && (
-    <LoginModal
-    onClose={() => setIsLoginOpen(false)}
-    />
-  )}
-  </>
+      <Navbar 
+        user={user}
+        onLoginClick={() => setIsLoginOpen(true)}
+        onLogoutClick={handleLogout}
+        onViewChange={setCurrentView}
+        currentView={currentView}
+      />
+      {user && (
+        <div style={{ padding: "10px", backgroundColor: "#e2e8f0", textAlign: "center", color: "#333" }}>
+          <h2>Welcome Back, {verifiedFullName}</h2>
+          <p>Explor our fleet below and login to select your reservation days.</p>
+        </div>
+      )}
+
+      {currentView === "bookings" ? (
+        /* 1. Added onLoginClick prop here */
+        <BookingDetails user={user} onLoginClick={() => setIsLoginOpen(true)} />
+      ) : (
+        user ? (
+          <Vehicles
+            user={user}
+            onLoginClick={() => setIsLoginOpen(true)}
+            onBookingSuccess={() => setCurrentView("bookings")} /* 2. ADDED PROP HERE */
+          />
+        ) : (
+          <>
+            <Hero/>
+            <Vehicles 
+              user={user}
+              onLoginClick={()=> setIsLoginOpen(true)}
+              onBookingSuccess={() => setCurrentView("bookings")} /* 3. ADDED PROP HERE TOO */
+            />
+            <AboutUs/>
+            <Contact/>
+            <CTA onLoginClick={() => setIsLoginOpen(true)} />
+          </>
+        )
+      )}
+      
+      <Footer/>
+      {isLoginOpen && (
+        <LoginModal onClose={() => setIsLoginOpen(false)} />
+      )}
+    </>
   );
 }

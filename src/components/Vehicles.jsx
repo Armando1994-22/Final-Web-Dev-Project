@@ -1,4 +1,8 @@
 import React, {useState} from "react";
+import { DateRangePicker } from 'react-date-range';
+import { format } from 'date-fns';
+import 'react-date-range/dist/styles.css'; 
+import 'react-date-range/dist/theme/default.css';
 import {supabase} from "../supabaseClient";
 import "../style/vehicles.css";
 
@@ -27,7 +31,7 @@ const Fleet = [
     }
 ];
 
-export default function Vehicles({ user, onLoginClick }) {
+export default function Vehicles({ user, onLoginClick, onBookingSuccess  }) {
     const [selectedCar, setSelectedCar] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [lightboxImage, setLightboxImage] = useState(null);
@@ -35,9 +39,14 @@ export default function Vehicles({ user, onLoginClick }) {
     const [deliveryLocation, setDeliveryLocation] = useState('');
 
     // 1. Split state into clear, separate Date and Hour values
-    const [startDate, setStartDate] = useState('');
+    const [dateRange, setDateRange] = useState([{
+        startDate: new Date(),
+        endDate: new Date(),
+        key:"selection"
+    }]);
+    const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+
     const [startHour, setStartHour] = useState('09'); // Default to 9 AM
-    const [endDate, setEndDate] = useState('');
     const [endHour, setEndHour] = useState('17');   // Default to 5 PM
 
     // Generate an array of 24 hours formatted as ["00", "01", ... "23"]
@@ -62,35 +71,38 @@ export default function Vehicles({ user, onLoginClick }) {
     const handleReservationSubmit = async (e) => {
     e.preventDefault();
 
-    if (!startDate || !endDate) return alert("Please pick your rental pickup and drop-off dates.");
+    // 1. Correctly extract and format your modern calendar state arrays
+    const formattedStartDate = format(dateRange[0].startDate, 'yyyy-MM-dd');
+    const formattedEndDate = format(dateRange[0].endDate, 'yyyy-MM-dd');
+
+    const finalStartTime = `${formattedStartDate}T${startHour}:00:00`;
+    const finalEndTime = `${formattedEndDate}T${endHour}:00:00`;
+
+    if (new Date(finalStartTime) >= new Date(finalEndTime)) {
+        return alert("Return date and hour must be after the pick-up date and hour.");
+    }
+    
     if (!user) return alert("Your login session expired. Please log in again.");
 
     setIsSubmitting(true);
 
     try {
-        // 1. Explicitly fetch the profile row matching this authenticated user ID
+        // 2. Fetch profile rows matching this authenticated user ID
         const { data: profileRow, error: profileError } = await supabase
             .from("profiles")
             .select("full_name")
             .eq("id", user.id)
-            .maybeSingle(); // Prevents crashing if profile is missing
+            .maybeSingle(); 
 
         if (profileError) console.error("Profile matching error:", profileError);
 
-        // 2. Prioritize: 1. Public Profile Table, 2. Account Metadata, 3. Email backup
         const verifiedFullName = profileRow?.full_name || 
                                  user.user_metadata?.full_name || 
                                  user.email.split('@')[0];
 
-        const finalStartTime = `${startDate}T${startHour}:00:00`;
-        const finalEndTime = `${endDate}T${endHour}:00:00`;
+        /* ❌ THE OLD CRASHING DUPLICATE OVERWRITE CODE WAS SUCCESSFULLY REMOVED FROM HERE */
 
-        if (new Date(finalStartTime) >= new Date(finalEndTime)) {
-            setIsSubmitting(false);
-            return alert("Return date and hour must be after the pick-up date and hour.");
-        }
-
-        // 3. Run overlap checks
+        // 3. Run overlap checks using your verified final times
         const { data: overlappingBookings, error: checkError } = await supabase
             .from("reservations")
             .select("id")
@@ -106,8 +118,8 @@ export default function Vehicles({ user, onLoginClick }) {
             return;
         }
 
-        // 4. Record row into database using the verifiedFullName variable
-        const { data, error: insertError } = await supabase
+        // 4. Record row into database using the verified variables
+        const { error: insertError } = await supabase
             .from("reservations")
             .insert([{
                 user_id: user.id,
@@ -122,12 +134,25 @@ export default function Vehicles({ user, onLoginClick }) {
 
         if (insertError) throw insertError;
 
-        alert(`🎉 Success! Your ${selectedCar.name} reservation is confirmed! Review your reervation in "My Bookings" tab.`);
+        alert(`🎉 Success! Your ${selectedCar.name} reservation is confirmed!`);
+            
+        // 5. Clean up modern state hooks upon successful checkout
         setSelectedCar(null);
-        setStartDate("");
-        setEndDate("");
         setWantsDelivery(false);
         setDeliveryLocation("");
+        
+        // Resets calendar picker back to today's active window layout
+        setDateRange([{
+            startDate: new Date(),
+            endDate: new Date(),
+            key: 'selection'
+        }]);
+
+        // 6. Execute instant layout rerouting to "My Bookings" page panel
+        if (onBookingSuccess) {
+            onBookingSuccess(); 
+            window.scrollTo({ top: 0, behavior: 'smooth' }); 
+        }
 
     } catch (error) {
         console.error("System Transaction Error:", error);
@@ -189,94 +214,121 @@ export default function Vehicles({ user, onLoginClick }) {
                 ))}
             </div>
             {selectedCar && (
-                <div className="booking-overlay">
-                    <div className="booking-modal">
-                        <button className="close-booking" style={{color: "black", padding: "0 2px", fontSize: "small"}} onClick={()=> setSelectedCar(null)}>x</button>
-                        <h3>Booking Schedule: {selectedCar.name}</h3>
+    <div className="booking-overlay">
+        <div className="booking-modal" style={{ overflow: "visible" }}> {/* Keeps calendar pop-up visible */}
+            <button className="close-booking" style={{color: "black", padding: "0 2px", fontSize: "small"}} onClick={()=> setSelectedCar(null)}>x</button>
+            <h3>Booking Schedule: {selectedCar.name}</h3>
 
-                        <form onSubmit={handleReservationSubmit} className="booking-form">
-                             <div className="form-group-time">
-                                <label>Pick-Up Date:</label>
-                                <input
-                                    type="date"
-                                    value={startDate}
-                                    min={getTodayDateString()} 
-                                    onChange={(e) => setStartDate(e.target.value)}
-                                    required
-                                />
-                                <label>Pick-Up Hour:  </label>
-                                    <select value={startHour} onChange={(e) => setStartHour(e.target.value)}>
-                                     {hoursDropdownOptions.map(hourObj => (
-                                        <option key={hourObj.value} value={hourObj.value}>
-                                            {hourObj.label} 
-                                        </option> 
-                                         ))}
-                                    </select>
-                            </div>
+            <form onSubmit={handleReservationSubmit} className="booking-form">
+                
+                {/* 1. NEW INTEGRATED DUAL CALENDAR POP-UP SELECTOR WINDOW */}
+                <div className="calendar-input-wrapper">
+    <label>Rental Duration Dates:</label>
+    <div 
+        className="custom-date-trigger"
+        onClick={() => setIsCalendarOpen(!isCalendarOpen)}
+    >
+        📅 {format(dateRange[0].startDate, 'MMM dd, yyyy')} — {format(dateRange[0].endDate, 'MMM dd, yyyy')}
+    </div>
 
-                            {/* 4. Re-engineered Return Field with standalone hour selector */}
-                            <div className="form-group-time">
-                                <label>Return Date:  </label>
-                                <input
-                                    type="date"
-                                    value={endDate}
-                                    min={startDate || getTodayDateString()}
-                                    onChange={(e) => setEndDate(e.target.value)}
-                                    required
-                                />
-                                <label>Return Hour: </label>
-                                    <select value={endHour} onChange={(e) => setEndHour(e.target.value)}>
-                                        {hoursDropdownOptions.map(hourObj => (
-                                        <option key={hourObj.value} value={hourObj.value}>
-                                            {hourObj.label}
-                                        </option>
-                                         ))}
-                                    </select>
-                            </div>
-                            <div className="delivery-section" style={{ margin: "15px 0", textAlign: "left" }}>
-                                <label style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", color: "black" }}>
-                                    <input 
-                                        type="checkbox" 
-                                        checked={wantsDelivery} 
-                                        onChange={(e) => setWantsDelivery(e.target.checked)} 
-                                        style={{ width: "auto" }}
-                                    />
-                                <strong>We can deliver your rental vehicle!</strong>
-                            </label>
+    {isCalendarOpen && (
+        <div className="calendar-popover-box">
+            <button 
+            type="button" 
+            className="calendar-close-x" 
+            onClick={() => setIsCalendarOpen(false)}
+            aria-label="Close calendar"
+        >
+            ✕
+        </button>
+            <DateRangePicker
+                onChange={item => setDateRange([item.selection])}
+                showSelectionPreview={true}
+                moveRangeOnFirstSelection={false}
+                months={2} 
+                ranges={dateRange}
+                direction="horizontal"
+                minDate={new Date()}
+                staticRanges={[]} 
+                inputRanges={[]}  
+            />
+            <button 
+                type="button" 
+                onClick={() => setIsCalendarOpen(false)}
+                className="calendar-confirm-btn"
+            >
+                Confirm Selection
+            </button>
+        </div>
+    )}
+</div>
 
-                            {/* Conditionally displays the location input text field only when the checkbox is ticked */}
-                            {wantsDelivery && (
-                                <div style={{ marginTop: "10px" }}>
-                                    <label style={{ color: "black", display: "block", marginBottom: "5px" }}>
-                                        Delivery Address / Drop-off Location:
-                                    </label>
-                                    <input 
-                                     type="text" 
-                                     placeholder="Enter complete street address, hotel, or airport name" 
-                                    value={deliveryLocation} 
-                                    onChange={(e) => setDeliveryLocation(e.target.value)} 
-                                    required={wantsDelivery} // Automatically forces them to write an address if checked
-                                    className="modal-input"
-                                    style={{ width: "100%", padding: "8px", borderRadius: "6px", border: "1px solid #ccc" }}
-                                />
-                            </div>
-                            )}
-                            </div>
-                            <button type="submit" disabled={isSubmitting} className="confirm-booking-btn">
-                                {isSubmitting ? "Securing Your Car..." : "Confirm Reservation"}
-                            </button>
-                        </form>
+                {/* 2. CONSOLIDATED HOUR DROPDOWNS SELECTOR PANELS */}
+                <div className="form-group-time" style={{ display: 'flex', gap: '20px', marginBottom: '15px' }}>
+                    <div style={{ flex: 1, textAlign: 'left' }}>
+                        <label style={{ color: 'black', display: 'block', marginBottom: '4px' }}>Pick-Up Hour:</label>
+                        <select value={startHour} onChange={(e) => setStartHour(e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: '6px', cursor: "pointer"}}>
+                            {hoursDropdownOptions.map(hourObj => (
+                                <option key={hourObj.value} value={hourObj.value}>{hourObj.label}</option> 
+                            ))}
+                        </select>
+                    </div>
+
+                    <div style={{ flex: 1, textAlign: 'left' }}>
+                        <label style={{ color: 'black', display: 'block', marginBottom: '4px' }}>Return Hour:</label>
+                        <select value={endHour} onChange={(e) => setEndHour(e.target.value)} style={{ width: '100%', padding: '8px', borderRadius: '6px', cursor: "pointer" }}>
+                            {hoursDropdownOptions.map(hourObj => (
+                                <option key={hourObj.value} value={hourObj.value}>{hourObj.label}</option>
+                            ))}
+                        </select>
                     </div>
                 </div>
-            )}
-            {lightboxImage && (
-                <div className="lightbox-overlay" onClick={() => setLightboxImage(null)}>
-                    <button className="lightbox-close">✕</button>
-                        <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
-                            <img src={lightboxImage} alt="Enlarged vehicle preview" className="lightbox-img" />
+
+                {/* 3. YOUR EXISTING SHUTTLE DELIVERY PREFERENCE INTERACTION CHECKS */}
+                <div className="delivery-section" style={{ margin: "15px 0", textAlign: "left" }}>
+                    <label style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", color: "black" }}>
+                        <input 
+                            type="checkbox" 
+                            checked={wantsDelivery} 
+                            onChange={(e) => setWantsDelivery(e.target.checked)} 
+                            style={{ width: "auto" }}
+                        />
+                        <strong>We can deliver your rental vehicle!</strong>
+                    </label>
+
+                    {wantsDelivery && (
+                        <div style={{ marginTop: "10px" }}>
+                            <label style={{ color: "black", display: "block", marginBottom: "5px" }}>
+                                Delivery Address / Drop-off Location:
+                            </label>
+                            <input 
+                                type="text" 
+                                placeholder="Enter complete street address, hotel, or airport name" 
+                                value={deliveryLocation} 
+                                onChange={(e) => setDeliveryLocation(e.target.value)} 
+                                required={wantsDelivery}
+                                className="modal-input"
+                                style={{ width: "100%", padding: "8px", borderRadius: "6px", border: "1px solid #ccc" }}
+                            />
                         </div>
+                    )}
                 </div>
-            )}
-        </section>
-    );
+
+                <button type="submit" disabled={isSubmitting} className="confirm-booking-btn">
+                    {isSubmitting ? "Securing Your Car..." : "Confirm Reservation"}
+                </button>
+            </form>
+        </div>
+    </div>
+)}
+{lightboxImage && (
+    <div className="lightbox-overlay" onClick={() => setLightboxImage(null)}>
+        <button className="lightbox-close">✕</button>
+        <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
+            <img src={lightboxImage} alt="Enlarged vehicle preview" className="lightbox-img" />
+        </div>
+    </div>
+)}
+</section>
+);
 }

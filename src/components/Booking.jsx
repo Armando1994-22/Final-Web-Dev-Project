@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient'; 
 import '../style/booking.css'; 
 
-export default function BookingDetails({ user }) {
+export default function BookingDetails({ user, onLoginClick }) {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isDeletingId, setIsDeletingId] = useState(null)
+  const [isDeletingId, setIsDeletingId] = useState(null);
 
   useEffect(() => {
     if (!user) {
@@ -45,24 +45,23 @@ export default function BookingDetails({ user }) {
     fetchBookings();
 
     return () => {
-      setBookings([]); // Wipes state safely whenever user profiles shift or exit
+      setBookings([]); 
     };
-
   }, [user]);
 
   const handleCancelBooking = async (bookingId, carName) => {
     const confirmCancel = window.confirm(`Are you sure you want to cancel your reservation for ${carName}?`);
     if (!confirmCancel) return;
 
-    try{
-      const {error} = await supabase
-      .from('reservations')
-      .delete()
-      .eq('id', bookingId);
+    try {
+      const { error } = await supabase
+        .from('reservations')
+        .delete()
+        .eq('id', bookingId);
 
-    if (error) throw error;
+      if (error) throw error;
 
-    setBookings((prevBookings) => prevBookings.filter((b) => b.id !== bookingId));
+      setBookings((prevBookings) => prevBookings.filter((b) => b.id !== bookingId));
       alert('🎉 Your reservation has been successfully cancelled.');
     } catch (err) {
       console.error('Cancellation failed:', err);
@@ -72,67 +71,93 @@ export default function BookingDetails({ user }) {
     }
   };
 
-  if (loading) return <div className="booking-message">Loading your reservations...</div>;
-  if (!user) return <div className="booking-message">Please log in to view your bookings.</div>;
-  
-  if (bookings.length === 0) {
+  const handleDeleteAccount = async () => {
+    const doubleCheck = window.confirm(
+      "⚠️ WARNING: Are you sure you want to permanently delete your account? This will cancel your reservations and erase your login identity immediately."
+    );
+    if (!doubleCheck) return;
+
+    const finalConfirm = window.prompt("Type DELETE to confirm account closure:");
+    if (finalConfirm !== "DELETE") return alert("Action aborted. Word mismatched.");
+
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .delete()
+        .eq('id', user.id);
+
+      if (error) throw error;
+
+      await supabase.auth.signOut();
+      alert("👋 Your login account and profile history have been successfully deleted.");
+      window.location.reload(); 
+
+    } catch (err) {
+      console.error("Account erasure failure:", err);
+      alert(`Error: ${err.message || "Please try again later."}`);
+    }
+  };
+
+   if (!user) {
     return (
       <div className="booking-message">
-        <p>You have no bookings yet.</p>
+        <h3>Access Your Fleet Reservations</h3>
+        <p>Please log in or create an account to view and manage your car rental details.</p>
+        <button onClick={onLoginClick} className="auth-cta-btn">
+          Sign In / Register
+        </button>
       </div>
     );
   }
 
+  if (loading) {
+    return <div className="booking-message">Loading your reservations...</div>;
+  }
+  
   return (
-    <div className="bookings-container">
-      <h2 className="bookings-title">My Bookings</h2>
-      <div className="bookings-list">
-        {bookings.map((booking) => (
-          <div key={booking.id} className="booking-card">
-            <div className="booking-card-content">
-              <h3 className="booking-car-name">{booking.car_name}</h3>
-              <div className="booking-dates">
-                <p>
-                  <strong>Pickup Time:</strong> {new Date(booking.start_time).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
-                </p>
-                <p>
-                  <strong>Return Time:</strong> {new Date(booking.end_time).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
-                </p>
-                {booking.wants_delivery && (
-                  <p style={{ color: "#4d2c2c", marginTop: "5px" }}>
-                    📍 <strong>Delivery To:</strong> {booking.delivery_location}
-                  </p>
-                )}
-              </div>
-              
-              {/* 3. Updated Footer with Status and Cancel Button */}
-              <div className="booking-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '15px' }}>
-                <span className="status-badge">Confirmed</span>
-                <button
-                  type="button"
-                  className="cancel-booking-btn"
-                  disabled={isDeletingId === booking.id}
-                  onClick={() => handleCancelBooking(booking.id, booking.car_name)}
-                  style={{
-                    backgroundColor: '#ef4444',
-                    color: 'white',
-                    border: 'none',
-                    padding: '6px 12px',
-                    borderRadius: '6px',
-                    cursor: isDeletingId === booking.id ? 'not-allowed' : 'pointer',
-                    opacity: isDeletingId === booking.id ? 0.5 : 1,
-                    fontSize: '14px',
-                    fontWeight: '6px'
-                  }}
-                >
-                  {isDeletingId === booking.id ? 'Cancelling...' : 'Cancel Booking'}
-                </button>
-              </div>
+    <>
+      {/* 1. MAIN RENTAL CONTENT CONTAINER CARDS */}
+      <div className="bookings-container">
+        <h2 className="bookings-title">My Bookings</h2>
 
-            </div>
+        {bookings.length === 0 ? (
+          <div className="booking-empty-notice" style={{ padding: "40px 20px", color: "#9ca3af", textAlign: "center" }}>
+            <p>You have no active car reservations at this time.</p>
           </div>
-        ))}
+        ) : (
+          <div className="bookings-list">
+            {bookings.map((booking) => (
+              <div key={booking.id} className="booking-card">
+                <h3 className="booking-car-name">{booking.car_name}</h3>
+                <div className="booking-dates">
+                  <p><strong>Pick-Up:</strong> {new Date(booking.start_time).toLocaleString()}</p>
+                  <p><strong>Return:</strong> {new Date(booking.end_time).toLocaleString()}</p>
+                  {booking.wants_delivery && <p>📍 Deliver to: {booking.delivery_location}</p>}
+                </div>
+                <div className="booking-footer">
+                  <span className="status-badge">Confirmed</span>
+                  <button 
+                    onClick={() => handleCancelBooking(booking.id, booking.car_name)}
+                    className="cancel-booking-btn"
+                    style={{ backgroundColor: "#ef4444", color: "white", border: "none", padding: "6px 8px", borderRadius: "999px", cursor: "pointer" }}
+                  >
+                    Cancel Rental
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div> {/* <-- MAIN CONTAINER CLOSES HERE */}
+
+      {/* 2. DANGER ZONE SITS APART OUTSIDE THE GREY BOX BUT RESTS IN THE BASE VIEW TAB */}
+      <div className="danger-zone-wrapper" style={{ maxWidth: "800px", margin: "30px auto" }}>
+        <h4></h4>
+        <p>Permanently remove your profile details and data history from our active records.</p>
+        <button onClick={handleDeleteAccount} className="delete-account-btn">
+          Delete My Account
+        </button>
       </div>
-    </div>
+    </>
   );
 }
