@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import { DateRangePicker } from 'react-date-range';
 import { format } from 'date-fns';
 import 'react-date-range/dist/styles.css'; 
@@ -37,6 +37,13 @@ export default function Vehicles({ user, onLoginClick, onBookingSuccess  }) {
     const [lightboxImage, setLightboxImage] = useState(null);
     const [wantsDelivery, setWantsDelivery] = useState(false);
     const [deliveryLocation, setDeliveryLocation] = useState('');
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 768);
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
     // 1. Split state into clear, separate Date and Hour values
     const [dateRange, setDateRange] = useState([{
@@ -155,15 +162,33 @@ export default function Vehicles({ user, onLoginClick, onBookingSuccess  }) {
         }
 
     } catch (error) {
-        console.error("System Transaction Error:", error);
-        alert(`Booking Error: ${error.message || "Something went wrong."}`);
+        console.error("System Transaction Error Details:", error);
+        
+        // Extract the error string safely from Supabase
+        const errorMessage = error.message || "";
+
+        // 1. Catch the exact database exclusion constraint guardrail
+        if (errorMessage.includes('unique_reservation_car_time_slot')) {
+            alert(`Sorry, the ${selectedCar.name} has already been reserved for these day(s). Please try a different time slot!`);
+            return; // Immediately stop execution so a second alert cannot fire
+        } 
+        
+        // 2. Catch the frontend overlap scan fallback just in case
+        if (errorMessage.includes('overlappingBookings')) {
+            alert(`Sorry, the ${selectedCar.name} is already reserved during your selected hours.`);
+            return;
+        }
+
+        // 3. Fallback alert for any completely unrelated system crashes
+        alert(`Booking Error: ${errorMessage || "Something went wrong."}`);
+
     } finally {
         setIsSubmitting(false);
     }
 };
     return (
         <section className="vehicles-section" id="vehicles">
-            <h2>Explor Our Vehicle Catalog, small but mighty!</h2>
+            <h2>Explore Our Vehicle Catalog—small but mighty!</h2>
 
             <div className="vehicles-grid">
                 {Fleet.map((car) =>(
@@ -200,14 +225,14 @@ export default function Vehicles({ user, onLoginClick, onBookingSuccess  }) {
                         <p className="car-intro">{car.intro}</p>
                         {!user ? (
                             <button className="reserve-btn unlock-btn" onClick={onLoginClick}>
-                                Log in to Reserve & See Daily Rates
+                                Log In To See Daily Rates & Reserve
                             </button>
                         ):(
                             <button 
                             className="reserve-btn" 
                             onClick={() => setSelectedCar(car)}
                             >
-                                Select Days & Time
+                                Select Day(s) & Time
                             </button>
                         )}
                     </div>
@@ -251,6 +276,8 @@ export default function Vehicles({ user, onLoginClick, onBookingSuccess  }) {
                 minDate={new Date()}
                 staticRanges={[]} 
                 inputRanges={[]}  
+                months={isMobile ? 1 : 2} 
+                direction={isMobile ? "vertical" : "horizontal"}
             />
             <button 
                 type="button" 

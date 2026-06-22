@@ -4,6 +4,9 @@ A modern, responsive full-stack car rental platform designed to handle hour-prec
 
 🌐 **[Live Deployment Link](https://github.io)**
 
+Skip the sign-up flow and test the live application instantly using this pre-configured testing profile:
+* **Email:** `guest@example.com`
+* **Password:** `KenjiAutoDemo2026!`
 ---
 
 ## 🛠️ Tech Stack & Architecture

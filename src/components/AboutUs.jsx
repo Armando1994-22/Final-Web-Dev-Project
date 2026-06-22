@@ -6,17 +6,17 @@ export default function AboutUs(){
         <section>
             <div  className="about-us" id="about-us">
                 <h3>About Kenji Autos</h3>
-                <p>We are a localy owned and operating care rental company. My husband and I, along with our 2 children (dogs) Kuno and Neji. p.s. "Kenji is a mix of both thier names" live in the outskirts of seattle. We love the diversity, the inclusion, and the opportunities this city gives us! We started Kenji Autos early 2026 as a means to make extra income but it slowly turned into much more!</p>
+                <p>We are a locally owned and operated car rental company. My husband and I—along with our two "children" (our dogs, Kuno and Neji)—live on the outskirts of Seattle. We love the diversity, inclusion, and opportunities this city provides! We started Kenji Autos in early 2026 as a way to earn extra income, but it has quickly evolved into so much more. (Fun fact: "Kenji" is a combination of both of their names!)</p>
             </div>
             <hr />
             <div className="about-us">
                 <h3>Our Vehicles</h3>
-                <p>We pride ourselves in having the most clean, well maintained, and reliable cars out there. We hand wash, and personally detail our cars to provide the best experience possible. We dont just "get" cars to rent we "choose" our cars always in mid what will the customers want and what best suits their needs!</p>
+                <p>We pride ourselves on offering the cleanest, most well-maintained, and reliable cars available. We hand-wash and personally detail every vehicle to provide you with the best possible experience. We don't just acquire random cars to rent—we carefully choose vehicles with our customers in mind, always focusing on what you want and what best suits your needs!</p>
             </div>
             <hr />
             <div className="about-us">
                 <h3>Customer Serivce is a Priority</h3>
-                <p>Being locally owned and operated you get the best experience when it comes to customer care. We are there 24/7, only being a message or call away. We respect every customers preference and try are very best to accommodate you.</p>
+                <p>Being locally owned and operated means you get the highest level of personal customer care. We are here for you 24/7, just a phone call or text message away. We respect every customer's unique preferences and always do our very best to accommodate your needs.</p>
             </div>
 
         </section>

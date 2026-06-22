@@ -25,6 +25,9 @@ export default function App(){
   })
   const {data: {subscription}} = supabase.auth.onAuthStateChange((_event, session) => {
     setUser(session?.user ?? null)
+    if (session?.user) {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
   })
   return () => subscription.unsubscribe()}, [])
 
