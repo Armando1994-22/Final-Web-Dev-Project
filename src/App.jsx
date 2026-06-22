@@ -50,7 +50,7 @@ export default function App(){
       {user && (
         <div style={{ padding: "10px", backgroundColor: "#e2e8f0", textAlign: "center", color: "#333" }}>
           <h2>Welcome Back, {verifiedFullName}</h2>
-          <p>Explor our fleet below and login to select your reservation days.</p>
+          <p>Explore our fleet below and login to select your reservation days.</p>
         </div>
       )}
 
