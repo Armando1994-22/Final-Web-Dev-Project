@@ -4,7 +4,7 @@
   padding: 20px;
   font-family: sans-serif;
   background: rgb(65, 64, 64);
-  border-radius: 12px; /* Smoothed container edges */
+  border-radius: 12px; 
 }
 
 .bookings-title {
@@ -20,17 +20,17 @@
 }
 
 .booking-card {
-  border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle dark border */
+  border: 1px solid rgba(255, 255, 255, 0.1); 
   border-radius: 8px;
   padding: 20px;
   background-color: #8d8787;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2); /* Enhanced depth drop shadow */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2); 
 }
 
 .booking-car-name {
   margin: 0 0 12px 0;
   font-size: 20px;
-  color: #ffffff; /* Changed to white for clean contrast on gray cards */
+  color: #ffffff; 
   font-weight: 600;
 }
 
@@ -50,14 +50,14 @@
   padding-top: 12px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
-  justify-content: space-between; /* Pushes badge to left and button to right */
-  align-items: center;            /* Perfectly centers them vertically on the line */
-  gap: 12px; /* Match modern card theme */
+  justify-content: space-between; 
+  align-items: center;            
+  gap: 12px; 
 }
 
 .status-badge {
   background-color: #54c83d;
-  color: #ffffff; /* Fixed text color for accessibility over green badge */
+  color: #ffffff; 
   padding: 4px 12px;
   border-radius: 9999px;
   font-size: 14px;
@@ -65,16 +65,15 @@
   display: inline-block;
 }
 
-/* --- NEW SLEEK AUTHENTICATION & MESSAGE PANEL PANELS --- */
 
 .booking-message {
   max-width: 500px;
   margin: 60px auto;
   padding: 40px;
   text-align: center;
-  color: #e5e7eb; /* Light grayish-white text for readability */
+  color: #e5e7eb; 
   font-family: sans-serif;
-  background: rgba(255, 255, 255, 0.05); /* Modern glass card look */
+  background: rgba(255, 255, 255, 0.05); 
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
@@ -89,19 +88,19 @@
 }
 
 .booking-message p {
-  color: #9ca3af; /* Soft Muted text */
+  color: #9ca3af; 
   font-size: 15px;
   line-height: 1.5;
   margin-bottom: 24px;
 }
 
-/* Authentication CTA Action Button */
+
 .auth-cta-btn {
   padding: 12px 28px;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  background-color: #2563eb; /* High performance electric blue */
+  background-color: #2563eb; 
   color: white;
   border: none;
   border-radius: 6px;
@@ -110,15 +109,13 @@
 }
 
 .auth-cta-btn:hover {
-  background-color: #1d4ed8; /* Darker deep slate blue */
+  background-color: #1d4ed8; 
   transform: translateY(-1px);
 }
 
 .auth-cta-btn:active {
   transform: translateY(1px);
 }
-
-/* --- HOVER MECHANICS FOR RENTAL CANCELLATIONS --- */
 
 .cancel-booking-btn {
   transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;

@@ -56,7 +56,7 @@
 }
 
 .nav-btn.logout-theme {
-  background-color: #e53e3e; /* Optional: Changes logout button to a sleek red */
+  background-color: #e53e3e; 
 }
 
 .menu-icon {
@@ -67,22 +67,21 @@
 
 @media (max-width: 768px) {
   .menu-icon {
-    display: block; /* Show hamburger/close icon */
+    display: block; 
     z-index: 1000;
   }
 
   .nav-link{
-    display: none; /* Hide menu by default on mobile */
+    display: none; 
     flex-direction: column;
     position: absolute;
-    top: 64px; /* Adjust based on your navbar height */
+    top: 64px; 
     right: 0;
     width: 30%;
     background-color: #281212;
-    z-index: 999; /* Match your navbar background */
+    z-index: 999; 
   }
 
-  /* Show menu when isOpen is true */
   .nav-link.active {
     display: flex !important;
   }
@@ -100,7 +99,7 @@
 }
 
 .nav-btn-link:hover {
-  color: #e53e3e; /* Matches the theme blue color */
+  color: #e53e3e; 
 }
 
 .nav-btn-link.active-tab {

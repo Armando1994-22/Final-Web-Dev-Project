@@ -12,7 +12,7 @@ export default function Navbar({user, onLoginClick, onLogoutClick, onViewChange,
 
   const handleNavClick = (viewName) => {
     onViewChange(viewName);
-    setIsOpen(false); //Closes mobil menu after clicking
+    setIsOpen(false); 
   };
 
   return (

@@ -45,7 +45,7 @@ export default function Vehicles({ user, onLoginClick, onBookingSuccess  }) {
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    // 1. Split state into clear, separate Date and Hour values
+   
     const [dateRange, setDateRange] = useState([{
         startDate: new Date(),
         endDate: new Date(),
@@ -53,10 +53,10 @@ export default function Vehicles({ user, onLoginClick, onBookingSuccess  }) {
     }]);
     const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
-    const [startHour, setStartHour] = useState('09'); // Default to 9 AM
-    const [endHour, setEndHour] = useState('17');   // Default to 5 PM
+    const [startHour, setStartHour] = useState('09'); 
+    const [endHour, setEndHour] = useState('17');   
 
-    // Generate an array of 24 hours formatted as ["00", "01", ... "23"]
+   
     const hoursDropdownOptions = Array.from({ length: 24 }, (_, i) => {
         const hour24 = i.toString().padStart(2, '0');
         const ampm = i >= 12 ? "PM" : "AM";
@@ -69,7 +69,7 @@ export default function Vehicles({ user, onLoginClick, onBookingSuccess  }) {
         };
     });
 
-    // Helper utility to get today's date string for calendar restriction (YYYY-MM-DD)
+    
     const getTodayDateString = () => {
         const now = new Date();
         return now.toISOString().split("T")[0];
@@ -78,7 +78,7 @@ export default function Vehicles({ user, onLoginClick, onBookingSuccess  }) {
     const handleReservationSubmit = async (e) => {
     e.preventDefault();
 
-    // 1. Correctly extract and format your modern calendar state arrays
+    
     const formattedStartDate = format(dateRange[0].startDate, 'yyyy-MM-dd');
     const formattedEndDate = format(dateRange[0].endDate, 'yyyy-MM-dd');
 
@@ -94,7 +94,7 @@ export default function Vehicles({ user, onLoginClick, onBookingSuccess  }) {
     setIsSubmitting(true);
 
     try {
-        // 2. Fetch profile rows matching this authenticated user ID
+        
         const { data: profileRow, error: profileError } = await supabase
             .from("profiles")
             .select("full_name")
@@ -107,9 +107,7 @@ export default function Vehicles({ user, onLoginClick, onBookingSuccess  }) {
                                  user.user_metadata?.full_name || 
                                  user.email.split('@')[0];
 
-        /* ❌ THE OLD CRASHING DUPLICATE OVERWRITE CODE WAS SUCCESSFULLY REMOVED FROM HERE */
 
-        // 3. Run overlap checks using your verified final times
         const { data: overlappingBookings, error: checkError } = await supabase
             .from("reservations")
             .select("id")
@@ -125,7 +123,7 @@ export default function Vehicles({ user, onLoginClick, onBookingSuccess  }) {
             return;
         }
 
-        // 4. Record row into database using the verified variables
+       
         const { error: insertError } = await supabase
             .from("reservations")
             .insert([{
@@ -143,19 +141,19 @@ export default function Vehicles({ user, onLoginClick, onBookingSuccess  }) {
 
         alert(`🎉 Success! Your ${selectedCar.name} reservation is confirmed!`);
             
-        // 5. Clean up modern state hooks upon successful checkout
+        
         setSelectedCar(null);
         setWantsDelivery(false);
         setDeliveryLocation("");
         
-        // Resets calendar picker back to today's active window layout
+        
         setDateRange([{
             startDate: new Date(),
             endDate: new Date(),
             key: 'selection'
         }]);
 
-        // 6. Execute instant layout rerouting to "My Bookings" page panel
+      
         if (onBookingSuccess) {
             onBookingSuccess(); 
             window.scrollTo({ top: 0, behavior: 'smooth' }); 
@@ -164,22 +162,22 @@ export default function Vehicles({ user, onLoginClick, onBookingSuccess  }) {
     } catch (error) {
         console.error("System Transaction Error Details:", error);
         
-        // Extract the error string safely from Supabase
+        
         const errorMessage = error.message || "";
 
-        // 1. Catch the exact database exclusion constraint guardrail
+        
         if (errorMessage.includes('unique_reservation_car_time_slot')) {
             alert(`Sorry, the ${selectedCar.name} has already been reserved for these day(s). Please try a different time slot!`);
-            return; // Immediately stop execution so a second alert cannot fire
+            return; 
         } 
         
-        // 2. Catch the frontend overlap scan fallback just in case
+        
         if (errorMessage.includes('overlappingBookings')) {
             alert(`Sorry, the ${selectedCar.name} is already reserved during your selected hours.`);
             return;
         }
 
-        // 3. Fallback alert for any completely unrelated system crashes
+        
         alert(`Booking Error: ${errorMessage || "Something went wrong."}`);
 
     } finally {
@@ -198,10 +196,10 @@ export default function Vehicles({ user, onLoginClick, onBookingSuccess  }) {
                             setLightboxImage(currentSrc)
                         }}>
                             <img 
-                                src={car.images[0]} // Displays the first image link from the list
+                                src={car.images[0]} 
                                 alt={car.name} 
                                 className="car-main-img" 
-                                style={{ cursor: "zoom-in" }} // Gives the user a visual anchor hint that it is clickable
+                                style={{ cursor: "zoom-in" }} 
                                 />
                          </div>
                          <div className="car-thumbnails">
@@ -212,7 +210,7 @@ export default function Vehicles({ user, onLoginClick, onBookingSuccess  }) {
                                     alt="Preview thumbnail" 
                                     className="thumb-img"
                                     onClick={(e) => {
-                                             // Click trick: Swaps the main featured image to the one clicked
+                                             
                                         const card = e.target.closest('.car-card');
                                         const mainImg = card.querySelector('.car-main-img');
                                             if (mainImg) mainImg.src = imgUrl;
@@ -240,13 +238,13 @@ export default function Vehicles({ user, onLoginClick, onBookingSuccess  }) {
             </div>
             {selectedCar && (
     <div className="booking-overlay">
-        <div className="booking-modal" style={{ overflow: "visible" }}> {/* Keeps calendar pop-up visible */}
+        <div className="booking-modal" style={{ overflow: "visible" }}> 
             <button className="close-booking" style={{color: "black", padding: "0 2px", fontSize: "small"}} onClick={()=> setSelectedCar(null)}>x</button>
             <h3>Booking Schedule: {selectedCar.name}</h3>
 
             <form onSubmit={handleReservationSubmit} className="booking-form">
                 
-                {/* 1. NEW INTEGRATED DUAL CALENDAR POP-UP SELECTOR WINDOW */}
+                
                 <div className="calendar-input-wrapper">
     <label>Rental Duration Dates:</label>
     <div 
@@ -290,7 +288,7 @@ export default function Vehicles({ user, onLoginClick, onBookingSuccess  }) {
     )}
 </div>
 
-                {/* 2. CONSOLIDATED HOUR DROPDOWNS SELECTOR PANELS */}
+                
                 <div className="form-group-time" style={{ display: 'flex', gap: '20px', marginBottom: '15px' }}>
                     <div style={{ flex: 1, textAlign: 'left' }}>
                         <label style={{ color: 'black', display: 'block', marginBottom: '4px' }}>Pick-Up Hour:</label>
@@ -311,7 +309,7 @@ export default function Vehicles({ user, onLoginClick, onBookingSuccess  }) {
                     </div>
                 </div>
 
-                {/* 3. YOUR EXISTING SHUTTLE DELIVERY PREFERENCE INTERACTION CHECKS */}
+                
                 <div className="delivery-section" style={{ margin: "15px 0", textAlign: "left" }}>
                     <label style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", color: "black" }}>
                         <input 

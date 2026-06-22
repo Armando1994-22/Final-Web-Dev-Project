@@ -1,5 +1,5 @@
 :root {
-color-scheme: light dark;
+color-scheme: dark;
 }
 
 
@@ -13,6 +13,8 @@ body{
     display: block;
     width: 100%;
     overflow-x: hidden;
+    background-color: #121212 !important; 
+    color: #ffffff !important; 
 }
 
 #root {

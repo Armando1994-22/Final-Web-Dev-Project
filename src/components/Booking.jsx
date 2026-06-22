@@ -116,7 +116,7 @@ export default function BookingDetails({ user, onLoginClick }) {
   
   return (
     <>
-      {/* 1. MAIN RENTAL CONTENT CONTAINER CARDS */}
+      
       <div className="bookings-container">
         <h2 className="bookings-title">My Bookings</h2>
 
@@ -148,9 +148,9 @@ export default function BookingDetails({ user, onLoginClick }) {
             ))}
           </div>
         )}
-      </div> {/* <-- MAIN CONTAINER CLOSES HERE */}
+      </div> 
 
-      {/* 2. DANGER ZONE SITS APART OUTSIDE THE GREY BOX BUT RESTS IN THE BASE VIEW TAB */}
+      
       <div className="danger-zone-wrapper" style={{ maxWidth: "800px", margin: "30px auto" }}>
         <h4></h4>
         <p>Permanently remove your profile details and data history from our active records.</p>
